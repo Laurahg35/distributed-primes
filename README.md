@@ -1,5 +1,7 @@
 # Proyecto Final – Sistemas Distribuidos  
 ## Generación de Números Primos por Microservicios
+- Jose Daniel Barreto Aguilera 160004622
+- Laura Vanessa Hernandez Garcia 160004630 
 
 Este proyecto implementa un sistema distribuido basado en **microservicios**, **colas de tareas**, **workers**, **almacenamiento persistente**, y comunicación entre servicios para generar números **primos grandes (12 dígitos o más)** garantizando:
 
