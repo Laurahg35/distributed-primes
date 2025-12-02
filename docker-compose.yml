@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: primesdb
+      POSTGRES_USER: primes
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+  new_service:
+    build: ./services/new_service
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - DATABASE_URL=postgresql://primes:secret@postgres:5432/primesdb
+    depends_on:
+      - redis
+      - postgres
+    ports:
+      - "8001:8001"
+
+  status_service:
+    build: ./services/status_service
+    environment:
+      - DATABASE_URL=postgresql://primes:secret@postgres:5432/primesdb
+    depends_on:
+      - postgres
+    ports:
+      - "8002:8002"
+
+  result_service:
+    build: ./services/result_service
+    environment:
+      - DATABASE_URL=postgresql://primes:secret@postgres:5432/primesdb
+    depends_on:
+      - postgres
+    ports:
+      - "8003:8003"
+
+  worker:
+    build: ./worker
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - DATABASE_URL=postgresql://primes:secret@postgres:5432/primesdb
+    depends_on:
+      - redis
+      - postgres
+
+volumes:
+  db_data:
